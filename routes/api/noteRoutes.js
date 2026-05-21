@@ -55,3 +55,30 @@ router.put("/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+// DELETE /api/notes/:id - Delete a note
+router.delete("/:id", async (req, res) => {
+  try {
+    // Find note by ID
+    const note = await Note.findById(req.params.id);
+
+    if (!note) {
+      return res.status(404).json({ message: "No note found with this id!" });
+    }
+
+    // Check ownership before deleting
+    if (note.user.toString() !== req.user._id.toString()) {
+      return res
+        .status(403)
+        .json({ message: "User is not authorized to delete this note." });
+    }
+
+    // Delete the note
+    await Note.findByIdAndDelete(req.params.id);
+    res.json({ message: "Note deleted!" });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+module.exports = router;
