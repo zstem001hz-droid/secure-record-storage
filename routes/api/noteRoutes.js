@@ -28,3 +28,30 @@ router.post("/", async (req, res) => {
     res.status(400).json(err);
   }
 });
+
+// PUT /api/notes/:id - Update a note
+router.put("/:id", async (req, res) => {
+  try {
+    // Find note by ID
+    const note = await Note.findById(req.params.id);
+
+    if (!note) {
+      return res.status(404).json({ message: "No note found with this id!" });
+    }
+
+    // Check ownership before updating
+    if (note.user.toString() !== req.user._id.toString()) {
+      return res
+        .status(403)
+        .json({ message: "User is not authorized to update this note." });
+    }
+
+    // Update the note
+    const updatedNote = await Note.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    res.json(updatedNote);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
