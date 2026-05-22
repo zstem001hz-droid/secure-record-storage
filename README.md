@@ -1,5 +1,13 @@
 # Secure Record Storage
 
+![Node.js](https://img.shields.io/badge/Node.js-20.x-green)
+![Express](https://img.shields.io/badge/Express-5.x-lightgrey)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green)
+![JWT](https://img.shields.io/badge/Auth-JWT-orange)
+![bcrypt](https://img.shields.io/badge/Security-bcrypt-red)
+
+A secure REST API implementing JWT-based authentication and ownership-based authorization. Users can only access and manage resources they own — unauthorized access returns explicit 403 Forbidden responses at the route level.
+
 ## Tech Stack
 
 - Node.js
@@ -73,6 +81,15 @@ secure-record-storage/
 - Generic error messages on failed login prevent email enumeration attacks
 - Environment variables protect sensitive credentials
 - `.env` excluded from version control via `.gitignore`
+
+## Authorization Flow
+
+1. Client sends credentials to `/api/users/login`
+2. Server validates credentials and issues a signed JWT
+3. Client includes JWT in `Authorization: Bearer <token>` header
+4. `authMiddleware` intercepts every note request and verifies the token
+5. Route handler retrieves the resource and compares ownership
+6. Access granted or `403 Forbidden` returned based on ownership match
 
 ## Error Responses
 
