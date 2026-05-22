@@ -7,7 +7,7 @@ const { authMiddleware } = require("../../utils/auth");
 router.use(authMiddleware);
 
 // GET /api/notes = Get all notes for a logged-in user
-router.get("/", async (requestAnimationFrame, res) => {
+router.get("/", async (req, res) => {
   try {
     const notes = await Note.find({ user: req.user._id });
     res.json(notes);
