@@ -14,7 +14,10 @@ module.exports = {
 
   // Authenticate and decode JWT from request
   authMiddleware: function (req, res, next) {
-    let token = (req.body && req.body.token) || req.query.token || req.headers.authorization;
+    let token =
+      (req.body && req.body.token) ||
+      req.query.token ||
+      req.headers.authorization;
 
     // Extract token from Bearer scheme
     if (req.headers.authorization) {
@@ -22,7 +25,9 @@ module.exports = {
     }
 
     if (!token) {
-      return res.status(401).json({ message: "You must be logged in to do that." });
+      return res
+        .status(401)
+        .json({ message: "You must be logged in to do that." });
     }
 
     try {
