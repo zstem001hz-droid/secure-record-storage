@@ -146,4 +146,14 @@ secure-record-storage/
 
 ## Reflection
 
-> 🚧 Work in progress
+## Reflection
+
+Building this lab reinforced a core principle from enterprise security that translates directly to application development — authentication and authorization are not the same thing, and treating them as such creates serious vulnerabilities.
+
+The ownership check pattern — `note.user.toString() === req.user._id.toString()` — is deceptively simple but critically important. MongoDB ObjectIds are not plain strings, and comparing them without `.toString()` produces silent false negatives. The authorization check passes when it should fail, and no error is thrown. This is the kind of subtle bug that passes code review, ships to production, and gets exploited. The `.toString()` conversion is not optional.
+
+From an Identity Access Management (IAM) perspective, this lab maps directly to resource-level access control — the principle that identity alone is not sufficient to grant access to a specific resource. In enterprise PAM platforms, a privileged account being authenticated does not mean it can access every vault. Access is scoped to specific resources based on ownership, role, and policy. The `authMiddleware` handles authentication — proving who the user is. The ownership check in each route handles authorization — proving what that user is allowed to touch. Both layers are required. Neither is sufficient alone.
+
+The `authMiddleware` architecture is also worth noting. Applying it once at the router level with `router.use(authMiddleware)` rather than on each individual route is a cleaner, more maintainable pattern. It mirrors the principle of least privilege at the architecture level — rather than deciding per-route whether to check auth, the default is always authenticated and exceptions are explicit. That's the right default.
+
+The most important takeaway from this lab is that authorization logic belongs close to the data, not at the edge. Checking ownership inside the route handler, after the note is retrieved, ensures the check is always performed against the actual resource — not an assumed state. That pattern holds at any scale.
